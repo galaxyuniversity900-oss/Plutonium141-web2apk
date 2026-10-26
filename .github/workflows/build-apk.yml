@@ -67,6 +67,7 @@ jobs:
               "ROWAD branding": "ROWAD - عماره" in s and "<title>ROWAD - عماره" in s,
               "Android permissions settings UI": "openAndroidAppSettings" in s and "permission-list" in s,
               "human-centered warm theme": "--terracotta:#a85e48" in s and "human-centered UX" in s,
+              "accessible motion system": "Refined motion system" in s and "prefers-reduced-motion:reduce" in s and "page-enter" in s,
               "IndexedDB schema upgrade": "DB_VERSION=4" in s,
               "studio photo store": '"studioPhotos"' in s,
               "studio page and upload": "async function studioPage" in s and "async function uploadStudioFiles" in s,
