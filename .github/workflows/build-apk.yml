@@ -84,6 +84,7 @@ jobs:
           if failed:
               raise SystemExit("Missing required features: " + ", ".join(failed))
           PY
+          node tests/database-open-tests.js
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
