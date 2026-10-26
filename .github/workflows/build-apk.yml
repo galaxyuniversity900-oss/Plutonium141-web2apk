@@ -55,6 +55,31 @@ jobs:
           PY
           node --check /tmp/omran-inline.js
 
+      - name: Check required app features
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s = Path("index.html").read_text(encoding="utf-8")
+          checks = {
+              "IndexedDB schema upgrade": "DB_VERSION=3" in s,
+              "residence history store": '"residenceHistory"' in s,
+              "resident transfer action": 'data-action="transfer-resident"' in s,
+              "resident departure action": 'data-action="exit-resident"' in s,
+              "historical movement persistence": 'await save("residenceHistory"' in s,
+              "full backup export": "async function exportBackup" in s,
+              "backup restore": "async function importBackup" in s,
+              "rent workflow": "openRentForm" in s,
+              "maintenance module": "maintenance" in s,
+              "inventory module": "stockMoves" in s,
+          }
+          for label, ok in checks.items():
+              print(("PASS" if ok else "FAIL") + ": " + label)
+          failed = [label for label, ok in checks.items() if not ok]
+          if failed:
+              raise SystemExit("Missing required features: " + ", ".join(failed))
+          PY
+
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
         with:
