@@ -1,0 +1,90 @@
+name: Build Property Manager APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate web app source
+        shell: bash
+        run: |
+          if [ ! -f index.html ]; then
+            echo "::error::index.html was not found in the repository root. Upload the complete HTML app (including its CSS, JavaScript, assets, and any required PWA files) before running this workflow."
+            exit 1
+          fi
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: package-lock.json
+        continue-on-error: true
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Prepare web assets
+        shell: bash
+        run: |
+          mkdir -p build/www
+          rsync -a --exclude='.git/' --exclude='.github/' --exclude='build/' --exclude='android/' ./ build/www/
+          test -f build/www/index.html
+
+      - name: Install Capacitor and initialize Android project
+        working-directory: build
+        shell: bash
+        run: |
+          npm init -y
+          npm install --save-exact @capacitor/core@6 @capacitor/android@6
+          npm install --save-dev --save-exact @capacitor/cli@6
+          cat > capacitor.config.json <<'EOF'
+          {
+            "appId": "com.plutonium.propertymanager",
+            "appName": "Property Manager",
+            "webDir": "www",
+            "bundledWebRuntime": false,
+            "android": {
+              "allowMixedContent": false
+            }
+          }
+          EOF
+          npx cap add android
+          npx cap sync android
+
+      - name: Build debug APK
+        working-directory: build/android
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleDebug
+
+      - name: Upload installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: property-manager-debug-apk
+          path: build/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
