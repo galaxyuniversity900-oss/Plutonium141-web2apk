@@ -64,6 +64,9 @@ jobs:
           s = Path("index.html").read_text(encoding="utf-8")
           arabic_copy = Path("عماره6.html").read_text(encoding="utf-8")
           checks = {
+              "ROWAD branding": "ROWAD - عماره" in s and "<title>ROWAD - عماره" in s,
+              "Android permissions settings UI": "openAndroidAppSettings" in s and "permission-list" in s,
+              "human-centered warm theme": "--terracotta:#a85e48" in s and "human-centered UX" in s,
               "IndexedDB schema upgrade": "DB_VERSION=4" in s,
               "studio photo store": '"studioPhotos"' in s,
               "studio page and upload": "async function studioPage" in s and "async function uploadStudioFiles" in s,
@@ -117,7 +120,7 @@ jobs:
           cat > capacitor.config.json <<'EOF'
           {
             "appId": "com.omran.buildingmanager",
-            "appName": "عُمران - إدارة العمارات",
+            "appName": "ROWAD - عماره",
             "webDir": "www",
             "bundledWebRuntime": false,
             "android": {
@@ -127,6 +130,56 @@ jobs:
           EOF
           npx cap add android
           npx cap sync android
+
+      - name: Add native Android app-settings bridge
+        working-directory: build/android
+        shell: bash
+        run: |
+          mkdir -p app/src/main/java/com/omran/buildingmanager
+          cat > app/src/main/java/com/omran/buildingmanager/AppSettingsPlugin.java <<'JAVA'
+          package com.omran.buildingmanager;
+
+          import android.content.Intent;
+          import android.net.Uri;
+          import android.provider.Settings;
+          import com.getcapacitor.JSObject;
+          import com.getcapacitor.Plugin;
+          import com.getcapacitor.PluginCall;
+          import com.getcapacitor.PluginMethod;
+          import com.getcapacitor.annotation.CapacitorPlugin;
+
+          @CapacitorPlugin(name = "AppSettings")
+          public class AppSettingsPlugin extends Plugin {
+              @PluginMethod
+              public void open(PluginCall call) {
+                  try {
+                      Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                      intent.setData(Uri.fromParts("package", getContext().getPackageName(), null));
+                      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                      getContext().startActivity(intent);
+                      JSObject result = new JSObject();
+                      result.put("opened", true);
+                      call.resolve(result);
+                  } catch (Exception error) {
+                      call.reject("Unable to open Android app settings", error);
+                  }
+              }
+          }
+          JAVA
+          cat > app/src/main/java/com/omran/buildingmanager/MainActivity.java <<'JAVA'
+          package com.omran.buildingmanager;
+
+          import android.os.Bundle;
+          import com.getcapacitor.BridgeActivity;
+
+          public class MainActivity extends BridgeActivity {
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+                  registerPlugin(AppSettingsPlugin.class);
+                  super.onCreate(savedInstanceState);
+              }
+          }
+          JAVA
 
       - name: Build debug APK
         working-directory: build/android
@@ -147,6 +200,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: omran-android-debug-apk
-          path: build/android/app/build/outputs/apk/debug/app-debug.apk
+          path: build/android/app/build/outputs/apk/debug/ROWAD-Omara-debug.apk
           if-no-files-found: error
           retention-days: 30
