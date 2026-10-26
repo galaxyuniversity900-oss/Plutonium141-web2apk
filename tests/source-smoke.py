@@ -13,6 +13,7 @@ checks = {
     "photo view, download, edit, delete": all(x in html for x in ["async function viewStudioPhoto", "async function downloadStudioPhoto", "async function editStudioPhoto", "async function deleteStudioPhoto"]),
     "apartment form and list entry points": "openStudioAfterSave" in html and 'data-action="studio-open"' in html,
     "image compression and storage error handling": "compressStudioImage" in html and "QuotaExceededError" in html,
+    "supported raster image formats": '["image/jpeg","image/png","image/webp","image/gif","image/avif","image/bmp"]' in html,
     "legacy backup protects missing stores": "const missingStores=stores.filter" in html and "for(const s of valid)await new Promise" in html,
     "studio photos prevent accidental apartment deletion": 'all("studioPhotos")' in html and "قبل نقل أو تنزيل أو حذف صور الاستوديو" in html,
     "database startup blocked handling": "req.onblocked" in html,
