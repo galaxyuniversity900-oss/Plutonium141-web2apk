@@ -5,8 +5,8 @@ root = Path(__file__).resolve().parents[1]
 html = (root / "index.html").read_text(encoding="utf-8")
 arabic = (root / "عماره6.html").read_text(encoding="utf-8")
 checks = {
-    "ROWAD branding and native permission settings": "ROWAD - عماره" in s and "openAndroidAppSettings" in s and "permission-list" in s,
-    "human-centered theme and accessible focus": "human-centered UX" in s and "--terracotta:#a85e48" in s and "focus-visible" in s,
+    "ROWAD branding and native permission settings": "ROWAD - عماره" in html and "openAndroidAppSettings" in html and "permission-list" in html,
+    "human-centered theme and accessible focus": "human-centered UX" in html and "--terracotta:#a85e48" in html and "focus-visible" in html,
     "valid standalone HTML": html.startswith("<!doctype html>") and "</html>" in html,
     "database schema v4": "DB_VERSION=4" in html,
     "studio photo store": '"studioPhotos"' in html,
