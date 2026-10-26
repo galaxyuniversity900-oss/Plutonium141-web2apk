@@ -61,8 +61,13 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           s = Path("index.html").read_text(encoding="utf-8")
+          arabic_copy = Path("عماره6.html").read_text(encoding="utf-8")
           checks = {
               "IndexedDB schema upgrade": "DB_VERSION=3" in s,
+              "blocked database upgrade handling": "req.onblocked" in s,
+              "database startup timeout": "انتهت مهلة فتح قاعدة البيانات" in s,
+              "version-change connection handling": "d.onversionchange" in s,
+              "standalone sources stay synchronized": s == arabic_copy,
               "residence history store": '"residenceHistory"' in s,
               "resident transfer action": 'data-action="transfer-resident"' in s,
               "resident departure action": 'data-action="exit-resident"' in s,
