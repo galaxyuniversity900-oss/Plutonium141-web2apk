@@ -6,7 +6,7 @@ const html = fs.readFileSync("index.html", "utf8");
 const match = html.match(/function openDB\(\)\{[\s\S]*?\nfunction all\(/);
 assert.ok(match, "openDB implementation must exist");
 const openDBSource = match[0].replace(/\nfunction all\($/, "");
-const stores = ["buildings", "apartments", "residents", "residenceHistory", "inventory", "stockMoves", "maintenance", "utilities", "transactions", "reminders", "meta"];
+const stores = ["buildings", "apartments", "residents", "residenceHistory", "inventory", "stockMoves", "maintenance", "utilities", "transactions", "reminders", "studioPhotos", "meta"];
 
 function fakeDb(existing = ["buildings"]) {
   const names = new Set(existing);
@@ -24,7 +24,7 @@ async function run(mode) {
   const db = fakeDb();
   const context = {
     DB_NAME: "omran-property-manager",
-    DB_VERSION: 3,
+    DB_VERSION: 4,
     stores,
     toast: (message, type) => messages.push({ message, type }),
     indexedDB: {
@@ -68,7 +68,7 @@ async function run(mode) {
 
   const timeoutSource = openDBSource.replace("},20000);", "},20);");
   const timeoutContext = {
-    DB_NAME: "omran-property-manager", DB_VERSION: 3, stores,
+    DB_NAME: "omran-property-manager", DB_VERSION: 4, stores,
     toast: (message, type) => messages.push({ message, type }),
     indexedDB: { open() { const req = { result: db, error: new Error("simulated") }; queueMicrotask(() => req.onblocked?.()); return req; } },
     setTimeout, clearTimeout, Error

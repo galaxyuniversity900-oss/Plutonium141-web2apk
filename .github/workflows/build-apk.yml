@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - phase-2-omran-native-apk
+      - phase-3-apartment-photo-studio
 
 permissions:
   contents: read
@@ -63,7 +64,12 @@ jobs:
           s = Path("index.html").read_text(encoding="utf-8")
           arabic_copy = Path("عماره6.html").read_text(encoding="utf-8")
           checks = {
-              "IndexedDB schema upgrade": "DB_VERSION=3" in s,
+              "IndexedDB schema upgrade": "DB_VERSION=4" in s,
+              "studio photo store": '"studioPhotos"' in s,
+              "studio page and upload": "async function studioPage" in s and "async function uploadStudioFiles" in s,
+              "studio download and delete": "async function downloadStudioPhoto" in s and "async function deleteStudioPhoto" in s,
+              "apartment studio option": "openStudioAfterSave" in s and 'data-action="studio-open"' in s,
+              "legacy backup compatibility": "const missingStores=stores.filter" in s,
               "blocked database upgrade handling": "req.onblocked" in s,
               "database startup timeout": "انتهت مهلة فتح قاعدة البيانات" in s,
               "version-change connection handling": "d.onversionchange" in s,
@@ -84,6 +90,8 @@ jobs:
           if failed:
               raise SystemExit("Missing required features: " + ", ".join(failed))
           PY
+          python3 tests/source-smoke.py
+          node tests/database-open-tests.js
           node tests/database-open-tests.js
 
       - name: Set up Android SDK
