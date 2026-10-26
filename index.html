@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#173c35"><title>إدارة العقارات | نظام العمارات والشقق</title>
+<link rel="manifest" href="manifest.json"><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="brand-mark">ع</div><div><strong>إدارة العقارات</strong><small>نظام إدارة العمارات والشقق</small></div></div>
+  <div class="top-actions"><span id="saveState" class="save-state">● محفوظ محليًا</span><button class="btn btn-outline" id="exportBtn">تصدير نسخة</button><label class="btn btn-outline file-label">استعادة نسخة<input id="importFile" type="file" accept=".json,application/json" hidden></label></div>
+</header>
+<div class="app-shell">
+<aside class="sidebar">
+  <div class="sidebar-label">القائمة الرئيسية</div>
+  <button class="nav-item active" data-page="dashboard"><span>▦</span> لوحة التحكم</button>
+  <button class="nav-item" data-page="buildings"><span>⌂</span> العمارات والشقق</button>
+  <button class="nav-item" data-page="residents"><span>♙</span> السكان والإقامات</button>
+  <button class="nav-item" data-page="finance"><span>ج</span> الحسابات والمالية</button>
+  <button class="nav-item" data-page="maintenance"><span>⚒</span> الصيانة والمرافق</button>
+  <button class="nav-item" data-page="inventory"><span>▤</span> العهد والمخزون</button>
+  <button class="nav-item" data-page="damages"><span>⚠</span> التلفيات والمخالفات</button>
+  <button class="nav-item" data-page="reminders"><span>◷</span> التذكيرات والمواعيد <span id="reminderBadge" class="nav-badge">0</span></button>
+  <button class="nav-item" data-page="reports"><span>▥</span> التقارير والتصدير</button>
+  <div class="sidebar-bottom"><div class="privacy-icon">▣</div><div><strong>تخزين على هذا الجهاز</strong><small>لا تُرسل البيانات إلى خادم</small></div></div>
+</aside>
+<main id="mainContent" class="main-content">
+  <section class="page active" id="page-dashboard">
+    <div class="page-heading"><div><p class="eyebrow">نظرة عامة</p><h1>لوحة التحكم</h1><p class="subheading">ملخص حالة العقارات والإيرادات والالتزامات.</p></div><button class="btn btn-primary" data-action="add-building">＋ إضافة عمارة</button></div>
+    <div class="stats-grid" id="dashboardStats"></div>
+    <div class="dashboard-grid">
+      <section class="panel"><div class="panel-heading"><div><h2>العمارات</h2><p>ملخص الإشغال لكل عمارة</p></div><button class="text-btn" data-page-link="buildings">عرض الكل ←</button></div><div id="buildingSummary" class="building-summary"></div></section>
+      <section class="panel"><div class="panel-heading"><div><h2>المواعيد القادمة</h2><p>تذكيرات تحتاج إلى متابعة</p></div><button class="text-btn" data-page-link="reminders">عرض الكل ←</button></div><div id="upcomingSummary" class="list-rows"></div></section>
+      <section class="panel"><div class="panel-heading"><div><h2>آخر الحركات المالية</h2><p>إيرادات ومصروفات مسجلة</p></div><button class="text-btn" data-page-link="finance">دفتر الحسابات ←</button></div><div id="recentTransactions" class="list-rows"></div></section>
+      <section class="panel"><div class="panel-heading"><div><h2>تنبيهات النظام</h2><p>نواقص أو التزامات مسجلة</p></div></div><div id="systemAlerts" class="list-rows"></div></section>
+    </div>
+  </section>
+  <section class="page" id="page-buildings"><div class="page-heading"><div><p class="eyebrow">الأصول والوحدات</p><h1>العمارات والشقق</h1><p class="subheading">إدارة عدة عمارات، الطوابق، أرقام الشقق وحالة الإشغال.</p></div><button class="btn btn-primary" data-action="add-building">＋ إضافة عمارة</button></div><div class="toolbar"><input id="buildingSearch" placeholder="ابحث باسم العمارة أو العنوان أو رقم الشقة"><select id="buildingFilter"><option value="all">كل الحالات</option><option value="occupied">مشغولة</option><option value="vacant">شاغرة</option></select></div><div id="buildingsList"></div></section>
+  <section class="page" id="page-residents"><div class="page-heading"><div><p class="eyebrow">ملفات السكان</p><h1>السكان والإقامات</h1><p class="subheading">بيانات السكان وسجل السكن والخروج ومرفقات الهوية.</p></div><button class="btn btn-primary" data-action="add-resident">＋ تسجيل ساكن</button></div><div class="toolbar"><input id="residentSearch" placeholder="بحث بالاسم أو الرقم القومي أو الشقة"><select id="residentStatus"><option value="all">كل السجلات</option><option value="active">مقيم حاليًا</option><option value="left">غادر</option></select></div><div id="residentsTable"></div></section>
+  <section class="page" id="page-finance"><div class="page-heading"><div><p class="eyebrow">دفتر الأستاذ</p><h1>الحسابات والمالية</h1><p class="subheading">إيرادات الإيجار والتحصيلات والمصروفات والمستحقات.</p></div><button class="btn btn-primary" data-action="add-transaction">＋ حركة مالية</button></div><div id="financeStats" class="stats-grid"></div><div class="toolbar"><input id="financeSearch" placeholder="ابحث في البيان أو الشقة أو المرجع"><select id="financeType"><option value="all">كل الحركات</option><option value="income">إيراد</option><option value="expense">مصروف</option></select></div><div id="transactionsTable"></div></section>
+  <section class="page" id="page-maintenance"><div class="page-heading"><div><p class="eyebrow">تشغيل العقار</p><h1>الصيانة والمرافق</h1><p class="subheading">إصلاحات المياه والخزانات والكهرباء والمشتريات الدورية.</p></div><button class="btn btn-primary" data-action="add-maintenance">＋ تسجيل عملية</button></div><div id="maintenanceStats" class="stats-grid"></div><div class="toolbar"><input id="maintenanceSearch" placeholder="ابحث بنوع الإصلاح أو العمارة أو الشقة"><select id="maintenanceType"><option value="all">كل العمليات</option><option>مياه</option><option>خزانات</option><option>كهرباء</option><option>غاز</option><option>أخرى</option></select></div><div id="maintenanceTable"></div></section>
+  <section class="page" id="page-inventory"><div class="page-heading"><div><p class="eyebrow">الأصول المسلّمة</p><h1>العهد والمخزون</h1><p class="subheading">تسجيل ما تسلمته كل شقة، وحركة التسليم والاستبدال والرصيد.</p></div><button class="btn btn-primary" data-action="add-inventory">＋ حركة عهدة</button></div><div class="toolbar"><input id="inventorySearch" placeholder="ابحث عن الصنف أو الشقة أو العمارة"><select id="inventoryType"><option value="all">كل الحركات</option><option value="issue">تسليم</option><option value="return">استرداد</option><option value="replace">استبدال</option></select></div><div id="inventoryTable"></div></section>
+  <section class="page" id="page-damages"><div class="page-heading"><div><p class="eyebrow">المعاينة والمسؤولية</p><h1>التلفيات والمخالفات</h1><p class="subheading">توثيق التلف وتكلفته وحالة المعالجة وربطه بالشقة.</p></div><button class="btn btn-primary" data-action="add-damage">＋ تسجيل تلفية</button></div><div class="toolbar"><input id="damageSearch" placeholder="ابحث في وصف التلف أو الشقة"><select id="damageStatus"><option value="all">كل الحالات</option><option value="open">مفتوحة</option><option value="fixed">تم الإصلاح</option></select></div><div id="damagesTable"></div></section>
+  <section class="page" id="page-reminders"><div class="page-heading"><div><p class="eyebrow">المتابعة</p><h1>التذكيرات والمواعيد</h1><p class="subheading">مواعيد الصيانة والإيجارات وتجديد العقود والخزانات.</p></div><button class="btn btn-primary" data-action="add-reminder">＋ تذكير جديد</button></div><div class="toolbar"><select id="reminderFilter"><option value="all">كل التذكيرات</option><option value="pending">غير مكتمل</option><option value="done">مكتمل</option></select></div><div id="remindersList"></div></section>
+  <section class="page" id="page-reports"><div class="page-heading"><div><p class="eyebrow">البيانات والنسخ الاحتياطي</p><h1>التقارير والتصدير</h1><p class="subheading">تنزيل نسخة كاملة أو تصدير جداول مستقلة ونقلها إلى جهاز آخر.</p></div></div><div class="report-grid"><article class="report-card"><div class="report-icon">⇩</div><h2>نسخة احتياطية كاملة</h2><p>تتضمن العمارات والشقق والسكان والحركات المالية والمرفقات.</p><button class="btn btn-primary" id="backupBtn">تنزيل JSON</button><button class="btn btn-outline" id="csvAllBtn">تصدير الجداول CSV</button></article><article class="report-card"><div class="report-icon">⇧</div><h2>استعادة / نقل البيانات</h2><p>اختر ملف JSON سبق تصديره. الاستعادة تستبدل البيانات الحالية بعد التأكيد.</p><label class="btn btn-outline file-label">اختيار ملف الاستعادة<input id="restoreFile2" type="file" accept=".json,application/json" hidden></label><p class="muted">احتفظ بنسخة قبل الاستعادة. الملفات التي تحتوي صورًا كبيرة قد تتجاوز سعة التخزين المتاحة.</p></article><article class="report-card"><div class="report-icon">▦</div><h2>تقرير مالي</h2><p>تصدير سجل الإيرادات والمصروفات في ملف CSV متوافق مع Excel.</p><button class="btn btn-outline" id="financeCsvBtn">تصدير الحسابات CSV</button></article><article class="report-card"><div class="report-icon">♙</div><h2>تقرير السكان</h2><p>قائمة السكان وبيانات الإقامة والشقق المرتبطة بهم.</p><button class="btn btn-outline" id="residentsCsvBtn">تصدير السكان CSV</button></article></div><div class="panel storage-panel"><div class="panel-heading"><div><h2>حالة التخزين</h2><p>بيانات محفوظة محليًا على هذا المتصفح / الجهاز.</p></div><button class="btn btn-danger-outline" id="clearDataBtn">مسح كل البيانات</button></div><div id="storageInfo"></div><p class="warning-note">تنبيه خصوصية: الرقم القومي وصور البطاقات بيانات حساسة. اقفل الجهاز، ولا تشارك ملفات النسخ الاحتياطي، واستخدم جهازًا موثوقًا. تخزين المتصفح لا يمنح التطبيق تلقائيًا صلاحية الوصول إلى كل ملفات الهاتف.</p></div></section>
+</main></div>
+<div id="modalRoot"></div><div id="toastRoot" class="toast-root" aria-live="polite"></div>
+<script src="app.js"></script>
+</body></html>
